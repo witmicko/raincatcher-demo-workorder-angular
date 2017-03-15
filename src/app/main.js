@@ -1,6 +1,8 @@
 'use strict';
 
 var angular = require('angular');
+var mediatorSubsribers = require('./mediator_subscribers');
+var _ = require('lodash');
 // require('fh-js-sdk/dist/feedhenry-forms.js');
 
 angular.module('app', [
@@ -14,10 +16,8 @@ angular.module('app', [
   })
 ]);
 
+
 //Initialising the application with required serviceconfig and initialising script.
-// require('./initialisation');
-
-
 function AppConfig($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/workorders/list');
 
@@ -28,16 +28,10 @@ function AppConfig($stateProvider, $urlRouterProvider) {
       data: {
         columns: 3
       },
-      resolve: {
-        // syncManagers: function(syncPool) {
-        //   console.log('>>>>>');
-        //   return syncPool.syncManagerMap();
-        // },
-        // workorderManager: function(syncManagers) {
-        //   return syncManagers.workorders;
-        // }
-      },
+
       controller: function($scope, $state, $mdSidenav, mediator) {
+        mediatorSubsribers.setupSubscribers(mediator);
+
         $scope.$state = $state;
         $scope.toggleSidenav = function(event, menuId) {
           $mdSidenav(menuId).toggle();

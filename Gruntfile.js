@@ -76,7 +76,11 @@ module.exports = function(grunt) {
         }
       }
     },
-
+    extract_sourcemap: {
+      files: {
+        '<%= app.dist %>': ['<%= app.src %>/app/bundle.js', '<%= app.src %>/app/vendor.js']
+      },
+    },
     browserify: {
       options: {
         browserifyOptions: {
@@ -94,14 +98,19 @@ module.exports = function(grunt) {
           transform: [
             // [browserifyNgannotate, {global: true}]
             // , [uglifyify, {global: true}]
-          ]
+          ],
+          browserifyOptions: {
+            debug: true
+          }
         }
       },
       vendor: {
         src: ['.'],
         dest: '<%= app.dist %>/app/vendor.js',
         options: {
-          debug: true,
+          browserifyOptions: {
+            debug: true
+          },
           alias: browserifyConfg.vendor
         }
       }
@@ -179,6 +188,8 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-extract-sourcemap');
+
   grunt.registerTask('serve', function(target) {
     if (target === 'local') {
       var conn = 'http://' + grunt.config.get('connect.options.hostname') + ':' +
@@ -195,9 +206,9 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('test', ['eslint', 'mochify:unit']);
+  grunt.registerTask('test', ['eslint']);
 
-  grunt.registerTask('build', ['clean:dist', 'sass', 'copy', 'clean:server', 'browserify']);
+  grunt.registerTask('build', ['clean:dist', 'sass', 'copy', 'clean:server', 'browserify', 'extract_sourcemap']);
 
   grunt.registerTask('default', ['serve']);
 };
